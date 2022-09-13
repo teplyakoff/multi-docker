@@ -14,3 +14,8 @@ after_success:
   - docker build -t dimat/multi-nginx ./nginx
   - docker build -t dimat/multi-server ./server
   - docker build -t dimat/multi-worker ./worker
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push dimat/multi-client
+  - docker push dimat/multi-nginx
+  - docker push dimat/multi-server
+  - docker push dimat/multi-worker
