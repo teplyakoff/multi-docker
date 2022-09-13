@@ -1,0 +1,25 @@
+name: Deploy multi
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: docker build -t dimat/react-test -f ./client/Dockerfile.dev .
+      - run: docker run -e CI=true dimat/react-test npm test
+
+      - run: docker build -t dimat/multi-client ./client
+      - run: docker build -t dimat/multi-nginx ./nginx
+      - run: docker build -t dimat/multi-server ./server
+      - run: docker build -t dimat/multi-worker ./worker
+
+      - run: echo ${{ DOCKER_PASSWORD }} | docker login -u ${{ DOCKER_ID }} --password-stdin
+
+      - run: docker push dimat/multi-client
+      - run: docker push dimat/multi-nginx
+      - run: docker push dimat/multi-server
+      - run: docker push dimat/multi-worker
